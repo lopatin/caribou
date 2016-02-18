@@ -1,0 +1,131 @@
+Working with key-value stores in Go
+Getting by without an ORM
+17 Feb 2016
+Tags: go, golang, riak, orm, nosql
+
+Alex Lopatin
+aleksander.lopatin@gmail.com
+@lopatron
+
+https://github.com/lopatin/caribou
+
+
+
+* Overview
+
+Model layer?
+
+- Representation of data in application code
+- Maybe persistence
+
+Project intro
+
+First steps
+
+Adding functionality
+
+- Data migration
+
+Plot twist
+
+Questions welcome at any time
+
+
+
+* What I'm building
+- Ad redirection & analytics service
+- Multiple server side components connected to Riak
+
+.image arch-diagram.png
+
+
+
+* Initial thoughts
+
+- I need an ORM
+- Model needs to know how to save itself
+- Getters and setters
+- I need inheritance, a `Model` super-class
+
+
+
+* Starting from the data
+
+- In-memory representation of data
+
+    map[string]interface{}
+    
+- Serializeable
+- Statically typed attributes
+
+    type Account struct {
+    	ID        string `json:"id"`
+    	Name      string `json:"name"`
+    	CreatedAt int64  `json:"created_at"`
+    }
+
+- Model layer?
+
+- Determine behaviors later
+
+
+* Data and schema migrations
+
+Current schema
+
+    type Account struct {
+        State string
+    }
+
+Desired schema
+
+    type Account struct {
+        Country string
+    }
+
+* How to migrate data with the current model layer
+
+*1.* Temporarily change the schema to be the union of the current and desired schemas
+
+*2.* Make necessary application level changes so that everything works when _both_ fields are set 
+
+*3.* Deploy all services
+
+*4.* Run a backfill script on every entry in the DB to migrate data from old field to new
+
+*5.* Find out if you missed anything in Part 2.
+
+_Clean_up_time_
+
+*6.* Finally remove the old field from the schema along with app level changes
+
+*7.* Deploy all services
+
+
+
+
+* Lazy data migration
+
+Braintree brainiacs
+.link https://github.com/braintree/curator Curator
+.link https://www.braintreepayments.com/blog/data-migrations-for-nosql-with-curator/ Lazy data migrations
+
+Define a list of migrations in your code
+
+Serialization: Encode the current migration version
+
+Deserialization: Migrate, or fast forward, the data from the version it was encoded at to the latest known version
+
+
+
+* Go implementation
+
+.play play/demo_migration.go /START OMIT/,/END OMIT/
+
+
+* But ... a Caribou can't migrate itself
+Embedded struct methods don't have access to parent fields
+
+.play play/embedded_structs.go /START OMIT/,/END OMIT/
+
+
