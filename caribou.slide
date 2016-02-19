@@ -120,6 +120,17 @@ Deserialization: Migrate, or fast forward, the data from the version it was enco
 
 * Go implementation
 
+- Define an empty interface
+- Write a function that performs an operation on that interface, in terms of hypothetical methods that exist on that interface.
+
+    FastForwardMap(Caribou, map[string]interface{}) (map[string]interface{}, error) {
+        ... coooode  ...
+    }
+
+- Implement those methods in an embedded interface
+
+* Example migration
+
 .play play/demo_migration.go /START OMIT/,/END OMIT/
 
 
@@ -127,5 +138,7 @@ Deserialization: Migrate, or fast forward, the data from the version it was enco
 Embedded struct methods don't have access to parent fields
 
 .play play/embedded_structs.go /START OMIT/,/END OMIT/
+
+* Plot twist
 
 

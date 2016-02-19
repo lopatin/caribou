@@ -3,10 +3,6 @@ package main
 import "fmt"
 
 // START OMIT
-type FooPrinter interface {
-	PrintFoo()
-}
-
 type Metadata struct {
 	Foo string
 }
@@ -20,7 +16,7 @@ type MyAccount struct {
 }
 
 func main() {
-	MyAccount{Metadata: Metadata{"Food bar"}}.PrintFoo()
+	MyAccount{Metadata{"Food bar"}}.PrintFoo()
 }
 // END OMIT
 

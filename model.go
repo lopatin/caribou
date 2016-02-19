@@ -8,6 +8,7 @@ import (
 type Model interface {
 	Caribou
 	Snapshotter
+	Contexter
 }
 
 
@@ -22,12 +23,13 @@ func LoadMapIntoModel(m map[string]interface{}, model Model) error {
 		return err
 	}
 
+	// Return the fast forwarded version of m
 	m, err = FastForwardMap(model, m)
 	if err != nil {
 		return err
 	}
 
-	// Load fast forwarded map now.
+	// Load fast forwarded map into struct now.
 	err = mapstructure.Decode(m, model)
 	if err != nil {
 		return err
@@ -35,12 +37,6 @@ func LoadMapIntoModel(m map[string]interface{}, model Model) error {
 
 	// Set the snapshot to the map that we are loading from.
 	model.SetSnapshot(m)
-
-	// Make sure that we are at the latest version of the model.
-//	err = FastForward(model, m)
-//	if err != nil {
-//		return err
-//	}
 
 	return nil
 }
